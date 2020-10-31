@@ -98,6 +98,10 @@ mysql -uadmin -ppass
 ```sql
 SHOW DATABASES
 ```
+Remove the mysql container when you are done:
+```
+docker rm -f mysql-container
+```
 
 ## 2. Share the data with volumes
 Alongside data persistence, volumes can be used to share data among containers and also the host machine.
@@ -126,6 +130,9 @@ And then you can see the new message:
 ```
 curl localhost:8080
 ```
-
+Remove the container when you are done:
+```
+docker rm -f nginx-container
+```
 
 

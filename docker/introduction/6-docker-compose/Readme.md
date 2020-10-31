@@ -32,7 +32,7 @@ docker run --rm -v $(pwd):/home/backend repository -w /home/backend  maven:3.6.3
 
 After building the project, we have a `notes-backend.jar` file in the target directory. Now, its time to write a docker file so we can run the backend api in a container:
 ```dockerfile
-FROM openjdk:11-alpine
+FROM openjdk:11
 WORKDIR /home
 COPY ./target/notes-backend.jar /home/notes-backend.jar
 ENTRYPOINT java -jar notes-backend.jar
