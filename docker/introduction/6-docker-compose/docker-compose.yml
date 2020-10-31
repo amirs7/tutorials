@@ -6,7 +6,7 @@ services:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: notes
+      MYSQL_DATABASE: todo
       MYSQL_USER: "${DATABASE_USERNAME}"
       MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
     volumes:
@@ -14,7 +14,7 @@ services:
       - ./mysql/server.cnf:/etc/mysql/conf.d/server.cnf
 
   backend:
-    container_name: notes-backend
+    container_name: todo-backend
     build: ./backend
     environment:
       MYSQL_SERVER_HOST: "${DATABASE_HOST}"
@@ -24,7 +24,7 @@ services:
       - 8080:8080
 
   frontend:
-    container_name: notes-frontend
+    container_name: todo-frontend
     build: ./frontend
     ports:
       - 9090:80

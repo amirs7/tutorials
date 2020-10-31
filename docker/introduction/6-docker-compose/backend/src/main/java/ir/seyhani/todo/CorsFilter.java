@@ -1,4 +1,4 @@
-package ir.seyhani.todos;
+package ir.seyhani.todo;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

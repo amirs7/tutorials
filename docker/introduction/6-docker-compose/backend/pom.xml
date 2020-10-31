@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ir.seyhani</groupId>
-    <artifactId>notes-backend</artifactId>
+    <artifactId>todo-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -106,7 +106,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <finalName>
-                        notes-backend
+                        todo-backend
                     </finalName>
                 </configuration>
                 <executions>

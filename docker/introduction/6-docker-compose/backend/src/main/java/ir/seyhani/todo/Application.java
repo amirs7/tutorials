@@ -1,4 +1,4 @@
-package ir.seyhani.todos;
+package ir.seyhani.todo;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;

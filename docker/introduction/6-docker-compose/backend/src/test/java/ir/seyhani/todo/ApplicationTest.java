@@ -1,4 +1,4 @@
-package ir.seyhani.todos;
+package ir.seyhani.todo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

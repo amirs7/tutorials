@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <Notes/>
+    <Tasks/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Notes from "./components/Notes.vue";
+import Tasks from "./components/Tasks.vue";
 
 @Component({
   components: {
-    Notes,
+    Tasks,
   },
 })
 export default class App extends Vue {}

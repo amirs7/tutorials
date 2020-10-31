@@ -9,14 +9,13 @@ This web application consists of three services:
 Next, each service is explained:
 
 ### Backend Service
-We create a simple CRUD api for ToDos. We define each todo as a simple text. This api can create a ToDo, delete a ToDo, and return the list of all ToDos.
+Our to do app has a simple CRUD api for tasks. Each task is just a text. This api can create or delete a task and also return the list of all tasks.
 
 The spring framework is used here for creating the api. For starting, first we need to build our java project and create an executable jar file. 
 First, head into the `backend` directory:
 ```
 cd backend
 ```
-
 For building the project we need to execute `mvn clean package` command.
 If you already have maven and java 11 installed on your machine, you can build the project on your machine:
 ```
@@ -30,22 +29,26 @@ docker run --rm -v $(pwd):/home/backend repository -w /home/backend  maven:3.6.3
 > Instead of getting shell access and executing `mvn clean package`, we are directly executing the `mvn clean package` command on the container. 
 > Using `-w` option we can set the working directory for the command to be executed.
 
-After building the project, we have a `notes-backend.jar` file in the target directory. Now, its time to write a docker file so we can run the backend api in a container:
+After building the project, we have a `todo-backend.jar` file in the target directory. Now, its time to write a docker file so we can run the backend api in a container:
 ```dockerfile
 FROM openjdk:11
 WORKDIR /home
-COPY ./target/notes-backend.jar /home/notes-backend.jar
-ENTRYPOINT java -jar notes-backend.jar
+COPY ./target/todo-backend.jar /home/todo-backend.jar
+ENTRYPOINT java -jar todo-backend.jar
 ```
 Since we want to run the jar file, we have set the base image to openjdk. Then we have copied the jar file into the image. Finally, we used the `ENTRYPOINT` instruction to run the jar file.
 Now, let's build our image:
 ```
-docker build -t notes-backend:v1 ./
+docker build -t todo-backend:v1 ./
 ```
 
 ### Frontend service
 The frontend service has been written in vue. It has a simple page for viewing the list of ToDos, adding a new ToDo and deleting ToDos. This application will uses the backend api.
 For bringing up our vue application we first build the project and then we serve the generated static files using an nginx image (like what we have done in step4). 
+First go to the frontend directory:
+```
+cd ../frontend
+```
 If you have node installed on your machine, you can simply execute the following command to build the project:
 ```
 npm run build
@@ -60,20 +63,20 @@ Now, we write the following dockerfile for the frontend service:
 FROM nginx:1.19
 COPY dist/ /usr/share/nginx/html/
 ```
-As you can see, it is similar to what we have written in step4. We just needed to copy the dist folder to proper directory in the image and we are done. 
+As you can see, it is similar to what we have written in step4, we just needed to copy the dist folder to proper directory in the image and we are done. 
 
 So, let's build the frontend image:
 ```
-docker build -t notes-frontend:v1 ./
+docker build -t todo-frontend:v1 ./
 ```
 ## 2. Starting the services
 In this section we try to bring up all the containers needed. We need a container for backend, frontend, and one for the database. 
 First, we bring up the database container:
 ```
-cd mysql
+cd ../mysql
 docker run -d --name mysql-server \
 -e MYSQL_ROOT_PASSWORD=1234 \
--e MYSQL_DATABASE=notes \
+-e MYSQL_DATABASE=todo \
 -e MYSQL_USERNAME=admin \
 -e MYSQL_PASSWORD=12345 \
 -v $(pwd)/data:/var/lib/mysql \
@@ -85,13 +88,12 @@ We also attached the server.cnf file to configure the database settings. Since o
 
 Next, we bring up the backend container:
 ```
-cd ../backend
-docker run -d --name backend-container \
--e MYSQL_SERVER_HOST=mysql-server \
+docker run -d --name todo-backend-container \
+-e MYSQL_SERVER_HOSTNAME=mysql-server \
 -e MYSQL_SERVER_USERNAME=admin \
 -e MYSQL_SERVER_PASSWORD=12345 \
 -p 8080:8080 \
-notes-backend:v1
+todo-backend:v1
 ```
 Since the api needs a connection to the database, we need to specify the address of the database. We need an ip address or hostname. When working with docker, most of the time, it is not reasonable to use ip address of the containers, since ip addresses are dynamically allocated by docker, so if some container is removed and added again it may given a different ip. 
 The better way is to use hostname of the container. By default, docker sets the name of the container as its hostname. Hostnames assigned by docker, in the docker networks, are resolved to corresponding container ip address. So because we named our database container `mysql-server` we can now use this name as the hostname of the mysql container.
@@ -99,7 +101,7 @@ We also passed the username and password that we used when running the mysql con
 
 Finally, we bring up the frontend container:
 ```
-docker run -d -p 9090:80 notes-frontend:v1
+docker run -d --name todo-frontend-container -p 9090:80 todo-frontend:v1
 ```
 
 You can now visit localhost:9090 and work with our simple ToDo app.
@@ -115,11 +117,11 @@ version: "3.8"
 
 services:
   mysql:
-    container_name: "${DATABASE_HOST}"
+    container_name: "${DATABASE_HOSTNAME}"
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: notes
+      MYSQL_DATABASE: todo
       MYSQL_USER: "${DATABASE_USERNAME}"
       MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
     volumes:
@@ -127,18 +129,18 @@ services:
       - ./mysql/server.cnf:/etc/mysql/conf.d/server.cnf
 
   backend:
-    container_name: notes-backend
-    image: notes-backend:v1
+    container_name: todo-backend-container
+    image: todo-backend:v1
     environment:
-      MYSQL_SERVER_HOST: "${DATABASE_HOST}"
+      MYSQL_SERVER_HOST: "${DATABASE_HOSTNAME}"
       MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
     ports:
       - 8080:8080
 
   frontend:
-    container_name: notes-frontend
-    image: notes-frontend:v1
+    container_name: todo-frontend-container
+    image: todo-frontend:v1
     ports:
       - 9090:80
 ```
@@ -183,11 +185,11 @@ version: "3.8"
 
 services:
   mysql:
-    container_name: "${DATABASE_HOST}"
+    container_name: "${DATABASE_HOSTNAME}"
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: notes
+      MYSQL_DATABASE: todo
       MYSQL_USER: "${DATABASE_USERNAME}"
       MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
     volumes:
@@ -195,17 +197,17 @@ services:
       - ./mysql/server.cnf:/etc/mysql/conf.d/server.cnf
 
   backend:
-    container_name: notes-backend
+    container_name: todo-backend-container
     build: ./backend
     environment:
-      MYSQL_SERVER_HOST: "${DATABASE_HOST}"
+      MYSQL_SERVER_HOST: "${DATABASE_HOSTNAME}"
       MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
     ports:
       - 8080:8080
 
   frontend:
-    container_name: notes-frontend
+    container_name: todo-frontend-container
     build: ./frontend
     ports:
       - 9090:80

@@ -1,4 +1,4 @@
-package ir.seyhani.todos;
+package ir.seyhani.todo;
 
 import lombok.Data;
 
