@@ -1,9 +1,8 @@
-package ir.seyhani.notesbackend;
+package ir.seyhani.todos;
 
-import ir.seyhani.notesbackend.Note;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
-public interface NoteRepository extends CrudRepository<Note, Long> {
+public interface TaskRepository extends CrudRepository<Task, Long> {
 }

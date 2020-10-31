@@ -1,4 +1,4 @@
-package ir.seyhani.notesbackend;
+package ir.seyhani.todos;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Data
 @Entity
-public class Note {
+public class Task {
     @Id
     @GeneratedValue
     private Long id;
