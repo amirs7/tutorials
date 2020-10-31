@@ -132,7 +132,7 @@ services:
     container_name: todo-backend-container
     image: todo-backend:v1
     environment:
-      MYSQL_SERVER_HOST: "${DATABASE_HOSTNAME}"
+      MYSQL_SERVER_HOSTNAME: "${DATABASE_HOSTNAME}"
       MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
     ports:
@@ -200,7 +200,7 @@ services:
     container_name: todo-backend-container
     build: ./backend
     environment:
-      MYSQL_SERVER_HOST: "${DATABASE_HOSTNAME}"
+      MYSQL_SERVER_HOSTNAME: "${DATABASE_HOSTNAME}"
       MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
     ports:
