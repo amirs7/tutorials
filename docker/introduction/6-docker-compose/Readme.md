@@ -87,9 +87,9 @@ Next, we bring up the backend container:
 ```
 cd ../backend
 docker run -d --name backend-container \
--e MYSQL_SERVER_HOST: mysql-server \
--e MYSQL_SERVER_USERNAME: admin \
--e MYSQL_SERVER_PASSWORD: 12345 \
+-e MYSQL_SERVER_HOST=mysql-server \
+-e MYSQL_SERVER_USERNAME=admin \
+-e MYSQL_SERVER_PASSWORD=12345 \
 -p 8080:8080 \
 notes-backend:v1
 ```
