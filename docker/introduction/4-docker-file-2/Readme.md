@@ -19,10 +19,15 @@ Now if you visit `localhost:8080` you can see the default welcome page of the ng
 ```
 curl localhost:8080
 ```
+Remove the nginx container when you are done:
+```
+docker rm -f nginx-container
+```
+> The `rm` command fails if the container is running. So we use `-f` option to force rm to remove a running container.
 
 Now, let's do an experiment. First start a container with the `ubuntu-with-greeting` image we have built in the previous step:
 ```
-docker run -d --name greeting-container ubuntu-with-greeting
+docker run -d --name greeting-container ubuntu-with-greeting:v2
 ```
 Next, list the containers:
 ```
@@ -64,6 +69,7 @@ So with the above instruction we have instructed the image to run the ping comma
 Now, let's build and run the pinger.
 First, head to `step4/pinger` and build the image:
 ```
+cd pinger
 docker image build -t pinger:v1 ./
 ```
 And then run a pinger container:
@@ -84,7 +90,6 @@ When you are done, delete the container:
 ```
 docker rm -f pinger-container
 ```
-> The `rm` command fails if the container is running. So we use `-f` option to force rm to remove a running container.
 
 ## 3. Building a more advanced image
 Let's build another image. In this section we build a custom nginx image which serves our static website.
@@ -111,6 +116,7 @@ You may have noticed that we have used a relative address for `index.html`. For 
 
 To see this in action, head to the `website` directory. Here we have `Dockerfile` and `index.html` files. Next, let's build the image:
 ```
+cd ../website
 docker image build -t website:v1 ./
 ```
 In the command above we have passed the `./` as the context. Using this context we have access to this directory during the build process, so we can use `./index.html` as the src argument for the `COPY` instruction.

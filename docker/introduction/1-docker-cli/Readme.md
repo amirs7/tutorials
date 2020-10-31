@@ -9,16 +9,17 @@ docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 ```
 To run our first container let's start an ubuntu container:
 ```
-docker run --name ubuntu-container -i -t ubuntu:20.04 bash
+docker run --name ubuntu-container -i -t --rm ubuntu:20.04 bash
 ```
 In the above command we have used the following options:
 
 * `--name`: The name of the container being crated
 
 * `-i` and  `-t` : Keep stdin open (`-i`) and allocate a tty (`-t`) to have shell access to the container
+* `--rm`: Remove the container if it stopped
 
 After specifying options we must pass in the image name which in this case we are using `ubuntu` image and version `20.04`.
-The last argument is `bash`. We are telling the docker to execute the `bash` command after starting the container so we can have shell access to it.
+The last argument is `bash`. We are telling the docker engine to execute the `bash` command after starting the container so we can have shell access to it.
 After executing the above command, you will have shell access to your newly created docker container.
 
 ## 2. Interacting with the container

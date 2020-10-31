@@ -24,9 +24,11 @@ Now, lets create an user and a database:
 CREATE DATABASE Test;
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'pass';
 GRANT ALL PRIVILEGES ON * . * TO 'admin'@'localhost';
+exit
 ```
 Now, if we close the mysql shell, we can login again using using admin user's credentials:
 ```
+exit
 mysql -uadmin -ppass
 ```
 You can also check that the `Test` database exists:
@@ -71,13 +73,13 @@ GRANT ALL PRIVILEGES ON * . * TO 'admin'@'localhost';
 ```
 Okay, let's remove the container again!
 ```
-docker rm -f mysql-server
+docker rm -f mysql-container
 ```
-You can see that the `mysql_data` directory and its content has remained intact. 
+You can see that the `mysql-data` directory and its content has remained intact. 
 
 To verify this, create a new mysql container with this volume:
 ```
-docker run --name mysql-container -v $(pwd)/mysql_data:/var/lib/mysql -d mysql
+docker run --name mysql-container -v $(pwd)/mysql-data:/var/lib/mysql -d mysql
 ```
 > We didn't specified the `MYSQL_ROOT_PASSWORD` variable in the above command. This value is used during the database initialization and since we already have the data, the root user is already created and initialization won't take place again. 
 Even if we specify this environment variable, it won't be used.
@@ -100,7 +102,7 @@ Alongside data persistence, volumes can be used to share data among containers a
 
 This time we create an nginx container again, but instead of putting our html inside the image, we use volumes to share the html files with the nginx container:
 ```
-docker run -d --name nginx-container -p 8080:80 -v $(pwd)/nginx_data:/usr/share/nginx/html/ nginx
+docker run -d --name nginx-container -p 8080:80 -v $(pwd)/nginx-data:/usr/share/nginx/html/ nginx
 ```
 > Be sure that you have removed the existing nginx container which its name is `nginx-container` before executing the above command. Otherwise command fails with a conflict error.
 
