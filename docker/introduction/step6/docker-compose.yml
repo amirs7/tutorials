@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  mysql:
+    container_name: mysql-server
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: notes
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 12345
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/server.cnf:/etc/mysql/conf.d/server.cnf
+
+  backend:
+    container_name: notes-backend
+    build: ./backend
+    environment:
+      MYSQL_SERVER_HOST: mysql-server
+      MYSQL_SERVER_USERNAME: admin
+      MYSQL_SERVER_PASSWORD: 12345
+    ports:
+      - 8080:8080
+
+  frontend:
+    container_name: notes-frontend
+    build: ./frontend
+    ports:
+      - 9090:80
