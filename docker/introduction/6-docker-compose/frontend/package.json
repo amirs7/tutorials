@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 9090",
-    "build": "vue-cli-service build",
+    "prebuild": "npm install",
+    "build": "npx vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

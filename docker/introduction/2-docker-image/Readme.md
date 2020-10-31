@@ -1,4 +1,4 @@
-# Getting Started with Docker CLI
+# Docker images
 
 ## 1. Working with images
 Docker containers are created from docker images. Each docker image can be thought of a template for creating a container. For example we have used the `ubuntu` image in the previous step to create a container.

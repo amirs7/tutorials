@@ -33,7 +33,6 @@ export default class Notes extends Vue {
 
   async listNotes() {
     this.notes = await apiClient.listNotes();
-    console.log(this.notes);
   }
   async addNote(){
     await apiClient.createNote(this.text);
