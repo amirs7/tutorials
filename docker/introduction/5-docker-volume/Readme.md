@@ -37,7 +37,7 @@ SHOW DATABASES;
 ```
 Now, if we stop the container and start it again, you can verify that the database has remained intact. But, what happens if we remove the container?
 ```
-docker rm -f mysql-server
+docker rm -f mysql-container
 ```
 Then you can check that if you create a mysql container again, all data we have added has been lost (the `Test` database and the `admin` user). This is the case where using volumes is required. Volumes are a kind of storage which can be shared among containers. When we attach a volume to a container, after removing the container, the volume remains intact. So we can start another container  and attach the volume to it again.
 > The concept of volumes, makes a separation of application and data. With this separation you can have stateless application. With stateless applications we can achieve simpler scaling, deployment, updating, etc.
@@ -49,11 +49,11 @@ Most images, like mysql, store their data in a specific directory or file. The m
 
 Let's start by creating a directory with an arbitrary name on the host:
 ```
-mkdir mysql_data
+mkdir mysql-data
 ```
 Next, when we want to create a mysql container, we create a volume using `mysql_data` directory and mount it on the `/var/lib/mysql/` path of the container:
 ```
-docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=1234 -v $(pwd)/mysql_data:/var/lib/mysql -d  mysql
+docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=1234 -v $(pwd)/mysql-data:/var/lib/mysql -d  mysql
 ```
 In the above command, we have used `-v` option to bind `mysql_data` on the host into `/var/lib/mysql` on the container.
 > Note that when using `bind-mount` volumes with docker run, it is required to use absolute paths for both source and destination. 
@@ -66,10 +66,12 @@ docker exec -it mysql-container bash
 ```
 mysql -uroot -p1234
 ```
+> Again, remember to wait for database initialization.
 ```sql
 CREATE DATABASE Test;
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'pass';
 GRANT ALL PRIVILEGES ON * . * TO 'admin'@'localhost';
+exit
 ```
 Okay, let's remove the container again!
 ```
