@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   mysql:
-    container_name: "${DATABASE_HOST}"
+    container_name: "${DATABASE_HOSTNAME}"
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
@@ -17,7 +17,7 @@ services:
     container_name: todo-backend
     build: ./backend
     environment:
-      MYSQL_SERVER_HOST: "${DATABASE_HOST}"
+      MYSQL_SERVER_HOST: "${DATABASE_HOSTNAME}"
       MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
     ports:
