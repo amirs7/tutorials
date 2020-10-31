@@ -71,27 +71,32 @@ docker build -t todo-frontend:v1 ./
 ```
 ## 2. Starting the services
 In this section we try to bring up all the containers needed. We need a container for backend, frontend, and one for the database. 
-First, we bring up the database container:
+In order to enable communication between the backend and mysql containers, they must connect to at least one common network. To do so we first need to create a docker network:
+```
+docker network create todo-network
+```
+Next, we bring up the database container:
 ```
 cd ../mysql
-docker run -d --name mysql-server \
+docker run --rm --name mysql-server \
+--network todo-network \
 -e MYSQL_ROOT_PASSWORD=1234 \
 -e MYSQL_DATABASE=todo \
--e MYSQL_USERNAME=admin \
--e MYSQL_PASSWORD=12345 \
 -v $(pwd)/data:/var/lib/mysql \
 -v $(pwd)/server.cnf:/etc/mysql/conf.d/server.cnf \
 mysql
 ```
-In this command, in addition to root password, we set a database name, an username and a password. Mysql image will create a database and a user with the information we have provided, and then it grants all privileges on this database to the user. We have also attached a volume for data. 
+In this command, in addition to root password, we set a database name which mysql will create during initialization. We have connected the database to the `todo-network` using `--network` option.
 We also attached the server.cnf file to configure the database settings. Since our backend service will run in a separate container, we have configured the mysql to accept connections from any host.
 
 Next, we bring up the backend container:
 ```
-docker run -d --name todo-backend-container \
+docker run --rm --name todo-backend-container \
+--network todo-network \
 -e MYSQL_SERVER_HOSTNAME=mysql-server \
--e MYSQL_SERVER_USERNAME=admin \
--e MYSQL_SERVER_PASSWORD=12345 \
+-e MYSQL_SERVER_DATABASE_NAME=todo \
+-e MYSQL_SERVER_USERNAME=root \
+-e MYSQL_SERVER_PASSWORD=1234 \
 -p 8080:8080 \
 todo-backend:v1
 ```
@@ -120,10 +125,8 @@ services:
     container_name: "${DATABASE_HOSTNAME}"
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: todo
-      MYSQL_USER: "${DATABASE_USERNAME}"
-      MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_DATABASE: "${DATABASE_NAME}"
     volumes:
       - ./mysql/data:/var/lib/mysql
       - ./mysql/server.cnf:/etc/mysql/conf.d/server.cnf
@@ -133,8 +136,9 @@ services:
     image: todo-backend:v1
     environment:
       MYSQL_SERVER_HOSTNAME: "${DATABASE_HOSTNAME}"
-      MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
+      MYSQL_SERVER_USERNAME: root
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_SERVER_DATABASE_NAME: "${DATABASE_NAME}"
     ports:
       - 8080:8080
 
@@ -150,6 +154,7 @@ We also used environment variables, e.g. DATABASE_USERNAME, for the values that 
 You may also have notice that, using docker compose, we can now use relative path for volumes.
 Now let's use this file to bring up our ToDo app. 
 First, change your working directory to step6. Docker compose cli assumes there is a docker-compose.yml file in current directory. Also, instead of setting the environment variables in the command line, we can put them in a file named `.env`. Docker compose automatically picks up the variables in the `.env` file in the current directory and substitutes them.
+Also there is no need for creating a network and connecting each container to it. Docker compose by default creates a network and so that all services specified in the compose file are on a same network.
 Now, to bring up all the containers we just need to run:
 ```
 docker-compose up -d
@@ -188,26 +193,25 @@ services:
     container_name: "${DATABASE_HOSTNAME}"
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: todo
-      MYSQL_USER: "${DATABASE_USERNAME}"
-      MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_DATABASE: "${DATABASE_NAME}"
     volumes:
       - ./mysql/data:/var/lib/mysql
       - ./mysql/server.cnf:/etc/mysql/conf.d/server.cnf
 
   backend:
-    container_name: todo-backend-container
+    container_name: todo-backend
     build: ./backend
     environment:
       MYSQL_SERVER_HOSTNAME: "${DATABASE_HOSTNAME}"
-      MYSQL_SERVER_USERNAME: "${DATABASE_USERNAME}"
+      MYSQL_SERVER_USERNAME: root
       MYSQL_SERVER_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_SERVER_DATABASE_NAME: "${DATABASE_NAME}"
     ports:
       - 8080:8080
 
   frontend:
-    container_name: todo-frontend-container
+    container_name: todo-frontend
     build: ./frontend
     ports:
       - 9090:80
