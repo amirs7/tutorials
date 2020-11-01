@@ -75,3 +75,5 @@ docker exec ubuntu-container ls /home
 ```
 
 > Copying files between the host and the container does not require the container to be running. You can copy files from and to stopped containers.
+
+[Docker CLI Reference](https://docs.docker.com/engine/reference/commandline/docker/)
