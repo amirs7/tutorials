@@ -78,7 +78,7 @@ docker network create todo-network
 Next, we bring up the database container:
 ```
 cd ../mysql
-docker run --rm --name mysql-server \
+docker run -d --name mysql-server \
 --network todo-network \
 -e MYSQL_ROOT_PASSWORD=1234 \
 -e MYSQL_DATABASE=todo \
@@ -91,7 +91,7 @@ We also attached the server.cnf file to configure the database settings. Since o
 
 Next, we bring up the backend container:
 ```
-docker run --rm --name todo-backend-container \
+docker run -d --name todo-backend-container \
 --network todo-network \
 -e MYSQL_SERVER_HOSTNAME=mysql-server \
 -e MYSQL_SERVER_DATABASE_NAME=todo \
@@ -110,6 +110,10 @@ docker run -d --name todo-frontend-container -p 9090:80 todo-frontend:v1
 ```
 
 You can now visit localhost:9090 and work with our simple ToDo app.
+Remove all containers when you are done:
+```
+docker rm -f todo-backend-container todo-frontend-container mysql-server
+```
 
 ## 3.Introducing docker-compose!
 We have now learnt how create images and containers. In this step we also learnt how to bring up a multiple containers to shape up a complete service. For real world applications we have many services and we need a to bring up a dozen of containers. Even in out ToDo app example we have needed to execute three commands and each of these commands were complex. Instead we can use docker-compose to alleviate this process. Docker-compose is a tool for managing the lifecycle of multiple containers. Docker-compose is not a part of docker cli, so its needed to be installed separately. 

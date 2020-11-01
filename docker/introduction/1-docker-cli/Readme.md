@@ -7,43 +7,44 @@ For interacting with the Docker engine, you can use docker CLI. Through this gui
 ```
 docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 ```
-To run our first container let's start an ubuntu container:
+To run your first container, let's start an ubuntu container:
 ```
 docker run --name ubuntu-container -i -t --rm ubuntu:20.04 bash
 ```
-In the above command we have used the following options:
+In the above command, we have used the following options:
 
 * `--name`: The name of the container being crated
 
-* `-i` and  `-t` : Keep stdin open (`-i`) and allocate a tty (`-t`) to have shell access to the container
-* `--rm`: Remove the container if it stopped
+* `-i` and  `-t` : Keep stdin open (`-i`) and allocate a tty (`-t`) which gives you shell access into the container
+* `--rm`: Remove the container whenever it stopped
 
-After specifying options we must pass in the image name which in this case we are using `ubuntu` image and version `20.04`.
-The last argument is `bash`. We are telling the docker engine to execute the `bash` command after starting the container so we can have shell access to it.
+After options, we must specify the image that we want to use. In this case, we are using an `ubuntu` image of version `20.04`.
+After specifying the image, we can write an arbitrary command to be executed when the container is being started. Here we have used the `bash` command since we need a shell.
 After executing the above command, you will have shell access to your newly created docker container.
 
 ## 2. Interacting with the container
-Now we have shell access to the container we can execute any command like installing the `vim`:
+Now that we have shell access to the container, we can execute any command like installing the `vim`:
 ``` shell
 apt update
 apt install vim -y
 ```
-Or creating a file on the container:
+Or, creating a file on the container:
 ```
 cd /home
 touch greeting.txt
 echo "Hello" > greeting.txt
 ```
-The next useful docker command is `exec`. Using `exec` you can directly execute any command on a container, so, you do not need to have to get shell access first and then executing your command.
+Another useful docker command is `exec`. Using `exec` you can directly execute your commands on the container, so, you do not need shell access into the container before executing your commands.
 ```
 docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
 ```
-Now open another terminal tab and use the following command to view the content of the `greeting.txt` file on the container.
+Now open another terminal tab and use the following command to view the content of the `greeting.txt` file on the container:
 ```
 docker exec ubuntu-container cat /home/greeting.txt
 ```
+
 ## 3. Container lifecycle
-By using the `docker run` command you can create containers. Once you have created a container you can stop, start or restart it:
+Once you have created a container you can stop, start, or restart it:
 ```
 docker stop ubuntu-container
 ```
@@ -65,7 +66,7 @@ Or, copy files from the host to the container:
 ```
 docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
 ```
-For instance, let's copy the file we have created to host and then copy it back to the container with a different name:
+For instance, let's copy the `greeting.txt` file to the host and then copy it back to the container with a different name:
 ```
 docker cp ubuntu-container:/home/greeting.txt /tmp
 ls tmp
@@ -73,4 +74,4 @@ docker cp /tmp/greeting.txt ubuntu-container:/home/host_greeting.txt
 docker exec ubuntu-container ls /home
 ```
 
-> Copying files between host and container does not require the container to be running. You can copy files from and to stopped containers.
+> Copying files between the host and the container does not require the container to be running. You can copy files from and to stopped containers.
